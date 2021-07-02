@@ -17,7 +17,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun callingSplash() {
         thread {
-            Thread.sleep(3000)
+            Thread.sleep(1500)
             val intent = Intent(this, ImageViewActivity::class.java)
             startActivity(intent)
 

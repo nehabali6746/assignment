@@ -1,10 +1,7 @@
 package com.kotlin.assignmenttask.viewModel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.kotlin.assignmenttask.MyApplication
 import com.kotlin.assignmenttask.R
 import com.kotlin.assignmenttask.repo.RepoistoryClass
@@ -16,7 +13,8 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
 
-class ImageDetailsViewModel (application: Application, val repoistoryClass: RepoistoryClass) : AndroidViewModel(application) {
+class ImageDetailsViewModel (application: Application, val repoistoryClass: RepoistoryClass) :
+    ViewModel() {
 
     val mutableLiveData=MutableLiveData<Event<Resource<ImageDetail>>>()
     val liveData: LiveData<Event<Resource<ImageDetail>>> = mutableLiveData
@@ -28,12 +26,13 @@ class ImageDetailsViewModel (application: Application, val repoistoryClass: Repo
     private suspend fun createUser (){
         mutableLiveData.postValue(Event(Resource.Loading()))
         try {
-            if (Utils.hasInternetConnection(getApplication<MyApplication>())) {
-                val response = repoistoryClass.signUpUser()
-                mutableLiveData.postValue(handlePicsResponse(response))
+            if (Utils.hasInternetConnection(MyApplication())) {
+                val response = repoistoryClass.getImagesList()
+
+                    mutableLiveData.postValue(handlePicsResponse(response))
 
             } else {
-                mutableLiveData.postValue(Event(Resource.Error(getApplication<MyApplication>().getString(
+                mutableLiveData.postValue(Event(Resource.Error(MyApplication().getString(
                         R.string.no_internet_connection))))
             }
         }  catch (t: Throwable) {

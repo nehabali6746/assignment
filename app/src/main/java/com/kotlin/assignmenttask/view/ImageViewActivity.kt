@@ -1,7 +1,6 @@
 package com.kotlin.assignmenttask.view
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -17,14 +16,17 @@ import com.kotlin.finaltarget.data.image.Row
 import kotlinx.android.synthetic.main.imageview_activity.*
 
 class ImageViewActivity : AppCompatActivity() {
-    lateinit var signUpViewModel: ImageDetailsViewModel
+
+    lateinit var imageviewModel: ImageDetailsViewModel
     private lateinit var adapter: ListAdapter
     private var alertDialog: CustomProgressDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.imageview_activity)
 
         inits()
+
 
     }
 
@@ -39,35 +41,57 @@ class ImageViewActivity : AppCompatActivity() {
 
         val repoistoryClass = RepoistoryClass()
         val factory = ViewModelFactory(application, repoistoryClass)
-        signUpViewModel = ViewModelProvider(this, factory).get(ImageDetailsViewModel::class.java)
+        imageviewModel = ViewModelProvider(this, factory).get(ImageDetailsViewModel::class.java)
 
 
         /* SetAdapter with list */
         callAdapter()
 
         /* calling  background thread  by launching coroutines */
-        signUpViewModel.thread()
+        imageviewModel.thread()
 
 
         /* calling Live Data from ViewModel*/
 
-           dataGettingFromViewModel()
+        dataGettingFromViewModel()
 
 
+        /* call swipe listener */
+        swipeLister()
+
+    }
+
+
+    private fun swipeLister() {
+
+        swipleListener_mSl.setOnRefreshListener {
+            swipleListener_mSl.isRefreshing = true
+
+            /* SetAdapter with list */
+            callAdapter()
+
+            /* calling  background thread  by launching coroutines */
+            imageviewModel.thread()
+
+
+            /* calling Live Data from ViewModel*/
+
+            dataGettingFromViewModel()
+        }
     }
 
     private fun dataGettingFromViewModel() {
 
-        signUpViewModel.liveData.observe(this, { event ->
+        imageviewModel.liveData.observe(this, { event ->
             event.getContentIfNotHandled()?.let { response ->
                 when (response) {
 
                     is Resource.Success -> {
                         response.data?.let { respons ->
                             retrieveList(respons.rows)
-                            header_mtv.text= respons?.title
+                            header_mtv.text = respons?.title
                             hideProgressBar()
-
+                            swipleListener_mSl.isRefreshing = false
                         }
 
                     }
