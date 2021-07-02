@@ -40,14 +40,14 @@ class ImageDetailsViewModel (application: Application, val repoistoryClass: Repo
                 is IOException -> {
                     mutableLiveData.postValue(
                             Event(Resource.Error(
-                                  " No Internet connection. Please retry"
+                                  "No Internet connection.Please retry"
                             ))
                     )
                 }
                 else -> {
                     mutableLiveData.postValue(
                             Event(Resource.Error(
-                                    "conversion control"
+                                    "conversion conterol......"
                             ))
 
 
